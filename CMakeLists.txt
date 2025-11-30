@@ -12,6 +12,14 @@ set(CMAKE_BUILD_TYPE
     "Debug"
     CACHE STRING "")
 
+set(EUGENE_BUILD_DEMOS
+    OFF
+    CACHE BOOL "")
 set(EUGENE_ROOT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
+message(STATUS "EUGENE - Build demos: ${EUGENE_BUILD_DEMOS}")
+
 add_subdirectory(eugene)
+if(EUGENE_BUILD_DEMOS)
+  add_subdirectory(demo)
+endif()

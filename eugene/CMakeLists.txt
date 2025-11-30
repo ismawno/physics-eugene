@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
 project(eugene)
 
-set(SOURCES gene/sph/kernels.cpp)
+set(SPH_SOURCES gene/sph/kernels.cpp)
 
-add_library(eugene STATIC ${SOURCES})
+add_library(eugene-sph STATIC ${SPH_SOURCES})
 
 include(FetchContent)
 FetchContent_Declare(
@@ -14,11 +14,17 @@ FetchContent_Declare(
   GIT_PROGRESS TRUE)
 FetchContent_MakeAvailable(toolkit)
 
-tkit_register_for_reflection(eugene SOURCES gene/sph/kernels.hpp)
-tkit_register_for_yaml_serialization(eugene SOURCES gene/sph/kernels.hpp)
+tkit_register_for_reflection(eugene-sph SOURCES gene/sph/kernels.hpp)
+tkit_register_for_yaml_serialization(eugene-sph SOURCES gene/sph/kernels.hpp)
 
-target_include_directories(eugene PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(eugene PRIVATE toolkit)
-target_compile_definitions(eugene PRIVATE GENE_ROOT_PATH="${EUGENE_ROOT_PATH}"
-                                          GENE_VERSION=\"v0.4.0\")
-tkit_default_configure(eugene)
+target_include_directories(eugene-sph PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_precompile_headers(eugene-sph PRIVATE
+                          ${CMAKE_CURRENT_SOURCE_DIR}/gene/core/pch.hpp)
+
+target_link_libraries(eugene-sph PUBLIC toolkit)
+target_compile_definitions(
+  eugene-sph PUBLIC GENE_ROOT_PATH="${EUGENE_ROOT_PATH}"
+                    GENE_VERSION=\"v0.1.0\")
+
+tkit_default_configure(eugene-sph)
